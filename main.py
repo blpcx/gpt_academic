@@ -24,7 +24,22 @@ def main():
     try:logging.basicConfig(filename="gpt_log/chat_secrets.log", level=logging.INFO, encoding="utf-8")
     except:logging.basicConfig(filename="gpt_log/chat_secrets.log", level=logging.INFO)
     print("所有问询记录将自动保存在本地目录./gpt_log/chat_secrets.log, 请注意自我隐私保护哦！")
-
+ 
+    # NEW:完整聊天记录
+    import logging
+    import os
+    os.makedirs("gpt_log", exist_ok=True)
+    class InfoFilter(logging.Filter):
+        def filter(self, record):
+            return record.levelno == logging.INFO and ('[raw_input]' in record.msg or '[response]' in record.msg)
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    handler = logging.FileHandler('gpt_log/chat_secrets_short.log', mode='a', encoding='utf-8')
+    handler.setFormatter(logging.Formatter('%(asctime)s %(message)s', datefmt='%Y-%m-%d %H:%M:%S'))
+    handler.addFilter(InfoFilter())
+    logger.addHandler(handler)
+    print("完整聊天记录将自动保存在本地目录./gpt_log/chat_secrets_short.log, 请注意自我隐私保护哦！")   
+    
     # 一些普通功能模块
     from core_functional import get_core_functions
     functional = get_core_functions()
